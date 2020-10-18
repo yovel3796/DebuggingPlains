@@ -1,0 +1,164 @@
+﻿{
+    "scenesData": [
+        {
+            "sceneName": "golemplains",
+            "playerSpawnPosition": {
+                "x": 322.489,
+                "y": -49.37142,
+                "z": -185.0995
+            },
+            "playerSpawnRotation": {
+                "x": 0,
+                "y": 0.6152443,
+                "z": 0,
+                "w": 0.4883366
+            },
+            "objectsLocations": [
+                {
+                    "objName": "SpawnCards/InteractableSpawnCard/iscChest1",
+                    "position": {
+                        "x": 323.2392,
+                        "y": -52.29929,
+                        "z": -164.9908
+                    },
+                    "rotation": {
+                        "x": 0,
+                        "y": 230,
+                        "z": 0
+                    }
+                },
+                {
+                    "objName": "SpawnCards/InteractableSpawnCard/iscChest2",
+                    "position": {
+                        "x": 325.264,
+                        "y": -52.47514,
+                        "z": -167.6548
+                    },
+                    "rotation": {
+                        "x": 0,
+                        "y": 230,
+                        "z": 0
+                    }
+                },
+                {
+                    "objName": "SpawnCards/InteractableSpawnCard/iscGoldChest",
+                    "position": {
+                        "x": 328.2358,
+                        "y": -51.72319,
+                        "z": -170.4923
+                    },
+                    "rotation": {
+                        "x": 0,
+                        "y": 230,
+                        "z": 0
+                    }
+                },
+                                {
+                    "objName": "SpawnCards/InteractableSpawnCard/iscShrineBlood",
+                    "position": {
+                        "x": 331.5801,
+                        "y": -52.88429,
+                        "z": -173.4541
+                    },
+                    "rotation": {
+                        "x": 0,
+                        "y": 235,
+                        "z": 0
+                    }
+                },
+                                {
+                    "objName": "SpawnCards/InteractableSpawnCard/iscShrineChance",
+                    "position": {
+                        "x": 334.6402,
+                        "y": -52.33547,
+                        "z": -177.1784
+                    },
+                    "rotation": {
+                        "x": 0,
+                        "y": 240,
+                        "z": 0
+                    }
+                },
+                                {
+                    "objName": "SpawnCards/InteractableSpawnCard/iscShrineCombat",
+                    "position": {
+                        "x": 337.9944,
+                        "y": -52.34299,
+                        "z": -182.7293
+                    },
+                    "rotation": {
+                        "x": 0,
+                        "y": 250,
+                        "z": 0
+                    }
+                },
+                {
+                    "objName": "SpawnCards/InteractableSpawnCard/iscShrineBoss",
+                    "position": {
+                        "x": 339.7971,
+                        "y": -52.31176,
+                        "z": -187.5125
+                    },
+                    "rotation": {
+                        "x": 0,
+                        "y": 116,
+                        "z": 0
+                    }
+                },
+                {
+                    "objName": "SpawnCards/InteractableSpawnCard/iscShrineHealing",
+                    "position": {
+                        "x": 340.7592,
+                        "y": -53.25931,
+                        "z": -193.3108
+                    },
+                    "rotation": {
+                        "x": 0,
+                        "y": 75,
+                        "z": 0
+                    }
+                },
+                {
+                    "objName": "SpawnCards/InteractableSpawnCard/iscShrineCleanse",
+                    "position": {
+                        "x": 342.2114,
+                        "y": -52.14697,
+                        "z": -198.4924
+                    },
+                    "rotation": {
+                        "x": 0,
+                        "y": 250,
+                        "z": 0
+                    }
+                },
+                {
+                    "objName": "SpawnCards/InteractableSpawnCard/iscShrineRestack",
+                    "position": {
+                        "x": 344.472,
+                        "y": -52.00994,
+                        "z": -203.2701
+                    },
+                    "rotation": {
+                        "x": 0,
+                        "y": 70,
+                        "z": 0
+                    }
+                },
+                {
+                    "objName": "SpawnCards/InteractableSpawnCard/iscShrineGoldshoresAccess",
+                    "position": {
+                        "x": 346.2198,
+                        "y": -51.98051,
+                        "z": -209.0303
+                    },
+                    "rotation": {
+                        "x": 0,
+                        "y": 250,
+                        "z": 0
+                    }
+                }
+
+            ]
+        }
+    ]
+}

@@ -1,0 +1,11 @@
+{
+  "version": 2,
+  "dgSpecHash": "AIS8dYdO2iWMQYxGRxaNAphFynefRpNLgpypndqkbyS3pPyQHb8HJo6ziXQp1+1wTQShBocGpc0wWHgzElZ+YA==",
+  "success": true,
+  "projectFilePath": "C:\\temp\\ror2\\DebuggingPlains\\DebuggingPlains\\DebuggingPlains.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\yovel\\.nuget\\packages\\microsoft.netcore.platforms\\1.1.0\\microsoft.netcore.platforms.1.1.0.nupkg.sha512",
+    "C:\\Users\\yovel\\.nuget\\packages\\netstandard.library\\2.0.3\\netstandard.library.2.0.3.nupkg.sha512"
+  ],
+  "logs": []
+}
