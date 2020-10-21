@@ -26,7 +26,7 @@ namespace MyUserName
     [BepInDependency("com.bepis.r2api")]
     [BepInDependency("com.harbingerofme.DebugToolkit")]
     //Change these
-    [BepInPlugin("com.Yovelz.DebugDiff", "DebugDiff", "1.0.0")]
+    [BepInPlugin("com.Yovelz.DebuggingPlains", "DebuggingPlains", "0.0.1")]
     public class DebuggingPlains : BaseUnityPlugin
     {
         public static ConfigEntry<bool> CfgEnabled { get; set; }
@@ -272,21 +272,13 @@ namespace MyUserName
             "freeze the timer"
             );
 
-            // TODO: finish this shit
-            string configFileName = CfgScenesConfigPath.Value;
-            if (configFileName == "")
-            {
-                configFileName = (string)CfgScenesConfigPath.DefaultValue;
-            }
-
             string jsonConfigPath = System.IO.Path.Combine(System.IO.Path.GetDirectoryName(CfgEnabled.ConfigFile.ConfigFilePath), CfgScenesConfigPath.Value);
             string jsonBuffer = "";
             bool validJsonFile = true;
+            bool fileExists = true;
 
-
-            if (File.Exists(jsonConfigPath) && validJsonFile)
+            if (File.Exists(jsonConfigPath))
             {
-
                 jsonBuffer = File.ReadAllText(jsonConfigPath);
                 try
                 {
@@ -294,25 +286,31 @@ namespace MyUserName
                 }
                 catch
                 {
+                    UnityEngine.Debug.LogWarning("scene config file malformed! using defaults");
                     validJsonFile = false;
                 }
-
             }
             else
             {
+                UnityEngine.Debug.LogWarning("scene config file not found! using defaults");
                 validJsonFile = false;
+                fileExists = false;
             }
+
 
 
             if (!validJsonFile)
             {
-                UnityEngine.Debug.LogWarning("scene config file not found or malformed! using defaults");
                 using (var stream = Assembly.GetExecutingAssembly().GetManifestResourceStream("DebuggingPlains.sampleJson.json"))
                 {
                     jsonBuffer = new StreamReader(stream).ReadToEnd();
                 }
-                File.WriteAllText(jsonConfigPath, jsonBuffer);
+                if (!fileExists)
+                {
+                    File.WriteAllText(jsonConfigPath, jsonBuffer);
+                }
             }
+
             this.scenesData = new ScenesData(JSONNode.Parse(jsonBuffer));
         }
 
