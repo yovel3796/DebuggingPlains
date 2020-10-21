@@ -5,8 +5,6 @@ using RoR2;
 using DebugToolkit;
 using System.Diagnostics;
 using UnityEngine;
-using EntityStates.Engi.EngiWeapon;
-using RoR2.UI;
 using BepInEx.Configuration;
 using System.Collections.Generic;
 using DebugDiff;
@@ -14,7 +12,7 @@ using System.IO;
 using SimpleJSON;
 using System.Reflection;
 
-namespace MyUserName
+namespace addOns
 {
     [R2APISubmoduleDependency(new string[]
     {
@@ -26,7 +24,7 @@ namespace MyUserName
     [BepInDependency("com.bepis.r2api")]
     [BepInDependency("com.harbingerofme.DebugToolkit")]
     //Change these
-    [BepInPlugin("com.Yovelz.DebuggingPlains", "DebuggingPlains", "0.0.1")]
+    [BepInPlugin("com.addOns.DebuggingPlains", "DebuggingPlains", "0.1.0")]
     public class DebuggingPlains : BaseUnityPlugin
     {
         public static ConfigEntry<bool> CfgEnabled { get; set; }
@@ -47,7 +45,7 @@ namespace MyUserName
             if (CfgEnabled.Value)
             {
                 // HOOK - land directly to lobby screen at the start of the game
-                On.RoR2.Networking.GameNetworkManager.CCSetScene += GameNetworkManager_CCSetScene;
+                On.RoR2.SplashScreenController.Start += SplashScreenController_Start;
                 if (CfgSkipLobbyScreen.Value)
                 {
                     // HOOK - start the game immidiatley after creating lobby
@@ -76,6 +74,11 @@ namespace MyUserName
                 On.RoR2.Networking.GameNetworkManager.OnClientConnect += (self, user, t) => { };
                 // TODO: add xyz character position text every frame for debugging (maybe with ObjectivePanelController.GetObjectiveSources?)
             }
+        }
+
+        private void SplashScreenController_Start(On.RoR2.SplashScreenController.orig_Start orig, SplashScreenController self)
+        {
+            RoR2.Console.instance.SubmitCmd(LocalUserManager.GetFirstLocalUser(), "transition_command gamemode ClassicRun; host 0;", false);
         }
 
         private void SceneDirector_PopulateScene(On.RoR2.SceneDirector.orig_PopulateScene orig, SceneDirector self)
@@ -330,31 +333,6 @@ namespace MyUserName
             }
 
         }
-
-        private void GameNetworkManager_CCSetScene(On.RoR2.Networking.GameNetworkManager.orig_CCSetScene orig, ConCommandArgs args)
-        {
-            if (args[0].ToString() == "title")
-            {
-                RoR2.Console.instance.SubmitCmd(LocalUserManager.GetFirstLocalUser(), "transition_command gamemode ClassicRun; host 0;", false);
-                return;
-            }
-            orig(args);
-        }
-
-        //private void PreGameController_Awake(On.RoR2.PreGameController.orig_Awake orig, PreGameController self)
-        //{
-        //
-        //    orig(self);
-        //    StackTrace st = new StackTrace();
-        //    for (int i = 0; i < st.FrameCount; i++)
-        //    {
-        //        UnityEngine.Debug.Log(st.GetFrame(i).GetMethod().Name);
-        //        UnityEngine.Debug.Log(st.GetFrame(i).GetMethod().ReflectedType.Name);
-        //        UnityEngine.Debug.Log("+++++++++++++++++");
-        //
-        //
-        //    }
-        //}
     }
 
 }
