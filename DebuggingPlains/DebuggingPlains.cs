@@ -307,7 +307,7 @@ namespace MyUserName
             if (!validJsonFile)
             {
                 UnityEngine.Debug.LogWarning("scene config file not found or malformed! using defaults");
-                using (var stream = Assembly.GetExecutingAssembly().GetManifestResourceStream("DebugDiff.sampleJson.json"))
+                using (var stream = Assembly.GetExecutingAssembly().GetManifestResourceStream("DebuggingPlains.sampleJson.json"))
                 {
                     jsonBuffer = new StreamReader(stream).ReadToEnd();
                 }
