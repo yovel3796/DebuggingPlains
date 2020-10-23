@@ -5,23 +5,10 @@ using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
 
-namespace DebugDiff
+namespace addOns
 {
-    class ObjectsLocations
+    public class ObjectsLocations
     {
-        public class ObjectToSpawn
-        {
-            public string objName;
-            public Vector3 position;
-            public Quaternion rotation;
-            public ObjectToSpawn(string objName, Vector3 position, Quaternion rotation)
-            {
-                this.objName = objName;
-                this.position = position;
-                this.rotation = rotation;
-
-            }
-        }
         private List<ObjectToSpawn> objectsList;
 
         public ObjectsLocations(List<ObjectToSpawn> objectsList) 
@@ -37,5 +24,18 @@ namespace DebugDiff
         public void Add(string objName, Vector3 position, Quaternion rotation) => objectsList.Add(new ObjectToSpawn(objName, position, rotation));
         public void Add(ObjectToSpawn objectToSpawn) => objectsList.Add(objectToSpawn);
 
+    }
+    public class ObjectToSpawn
+    {
+        public string objName;
+        public Vector3 position;
+        public Quaternion rotation;
+        public ObjectToSpawn(string objName, Vector3 position, Quaternion rotation)
+        {
+            this.objName = objName;
+            this.position = position;
+            this.rotation = rotation;
+
+        }
     }
 }

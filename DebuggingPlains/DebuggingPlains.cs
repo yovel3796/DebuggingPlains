@@ -3,11 +3,9 @@ using R2API;
 using R2API.Utils;
 using RoR2;
 using DebugToolkit;
-using System.Diagnostics;
 using UnityEngine;
 using BepInEx.Configuration;
 using System.Collections.Generic;
-using DebugDiff;
 using System.IO;
 using SimpleJSON;
 using System.Reflection;
@@ -27,6 +25,7 @@ namespace addOns
     [BepInPlugin("com.addOns.DebuggingPlains", "DebuggingPlains", "0.1.0")]
     public class DebuggingPlains : BaseUnityPlugin
     {
+        DPConfig config;
         public static ConfigEntry<bool> CfgEnabled { get; set; }
         public static ConfigEntry<string> CfgScenesConfigPath { get; set; }
         public static ConfigEntry<bool> CfgSkipLobbyScreen { get; set; }
@@ -41,12 +40,13 @@ namespace addOns
 
         public void Awake()
         {
-            InitConfigs();
-            if (CfgEnabled.Value)
+            config = new DPConfig(this.Config);
+
+            if (config.CfgEnabled.Value)
             {
                 // HOOK - land directly to lobby screen at the start of the game
                 On.RoR2.SplashScreenController.Start += SplashScreenController_Start;
-                if (CfgSkipLobbyScreen.Value)
+                if (config.CfgSkipLobbyScreen.Value)
                 {
                     // HOOK - start the game immidiatley after creating lobby
                     On.RoR2.PreGameRuleVoteController.ServerHandleClientVoteUpdate += PreGameRuleVoteController_ServerHandleClientVoteUpdate;
@@ -55,7 +55,7 @@ namespace addOns
                 // TODO: fix the "Return to menu" restart run (submitting no_enemies again which makes this false)
                 Run.onRunStartGlobal += (obj) => {
                     // add error handling (when Network user list is empty/null?)
-                    RoR2.Console.instance.SubmitCmd(NetworkUser.readOnlyLocalPlayersList[0], CfgInitCmds.Value, false);
+                    RoR2.Console.instance.SubmitCmd(NetworkUser.readOnlyLocalPlayersList[0], config.CfgInitCmds.Value, false);
                 };
                 // HOOK - add all run configs from config file to the debug run
                 On.RoR2.PreGameRuleVoteController.UpdateGameVotes += PreGameRuleVoteController_UpdateGameVotes;
@@ -66,7 +66,7 @@ namespace addOns
                 // HOOK - populate the scene with our additional stuff
                 On.RoR2.SceneDirector.PopulateScene += SceneDirector_PopulateScene;
                 // HOOK - stop the run timer
-                if (CfgFreezeTimer.Value)
+                if (config.CfgFreezeTimer.Value)
                 {
                     On.RoR2.Run.ShouldUpdateRunStopwatch += (orig, self) => { return false; };
                 } 
@@ -84,10 +84,10 @@ namespace addOns
         private void SceneDirector_PopulateScene(On.RoR2.SceneDirector.orig_PopulateScene orig, SceneDirector self)
         {
             orig(self);
-            ScenesData.SceneData scene = this.scenesData.GetSceneDataBySceneName(SceneInfo.instance.sceneDef.baseSceneName);
+            SceneData scene = this.config.scenesData.GetSceneDataBySceneName(SceneInfo.instance.sceneDef.baseSceneName);
             if (scene != null)
             {
-                foreach (ObjectsLocations.ObjectToSpawn obj in scene.objectsList.GetObjectsList())
+                foreach (ObjectToSpawn obj in scene.objectsList.GetObjectsList())
                 {
                     SpawnCard spawnCard = Resources.Load<SpawnCard>(obj.objName);
                     if (spawnCard)
@@ -96,7 +96,7 @@ namespace addOns
                         {
                             placementMode = DirectorPlacementRule.PlacementMode.Direct,
                             position = obj.position
-                        }, new Xoroshiro128Plus(2)));
+                        }, new Xoroshiro128Plus(0)));
                         gameObject.transform.rotation = obj.rotation;
                     }
                     else
@@ -123,33 +123,33 @@ namespace addOns
             Vector3 vector = Vector3.zero;
             Quaternion quaternion = Quaternion.identity;
 
-            ScenesData.SceneData scene = this.scenesData.GetSceneDataBySceneName(self.sceneDef.baseSceneName);
+            SceneData scene = this.config.scenesData.GetSceneDataBySceneName(self.sceneDef.baseSceneName);
             // TODO: make the character spawn facing the objects and not to the side
             if (scene != null)
             {
-                vector = scene.playerSpawnPosition;
+                vector = scene.playerSpawnPosition.x == 0 && scene.playerSpawnPosition.y == 0 && scene.playerSpawnPosition.z == 0 ? Vector3.zero : scene.playerSpawnPosition;
                 quaternion = scene.playerSpawnRotation;
             }
-            else
+
+            if (vector == Vector3.zero)
             {
                 Transform playerSpawnTransform = self.GetPlayerSpawnTransform();
                 if (playerSpawnTransform)
                 {
                     vector = playerSpawnTransform.position;
-                    quaternion = playerSpawnTransform.rotation;
                 }
             }
 
-            SurvivorIndex survivorIndex = SurvivorCatalog.FindSurvivorIndex(CfgCharacter.Value);
+            SurvivorIndex survivorIndex = SurvivorCatalog.FindSurvivorIndex(config.CfgCharacter.Value);
             if (survivorIndex == SurvivorIndex.None)
             {
-                UnityEngine.Debug.LogWarning($"Survivor {CfgCharacter.Value} could not be found!");
+                UnityEngine.Debug.LogWarning($"Survivor {config.CfgCharacter.Value} could not be found!");
                 
-                survivorIndex = SurvivorCatalog.FindSurvivorIndex((string)CfgCharacter.DefaultValue);
+                survivorIndex = SurvivorCatalog.FindSurvivorIndex((string)config.CfgCharacter.DefaultValue);
             }
             characterMaster.bodyPrefab = SurvivorCatalog.GetSurvivorDef(survivorIndex).bodyPrefab;
             CharacterBody a = characterMaster.Respawn(vector, quaternion, true);
-            if (CfgSpawnWithDropPod.Value)
+            if (config.CfgSpawnWithDropPod.Value)
             {
                 Run.instance.HandlePlayerFirstEntryAnimation(a, vector, quaternion);
             }
@@ -157,16 +157,16 @@ namespace addOns
 
         private void Run_PickNextStageScene(On.RoR2.Run.orig_PickNextStageScene orig, Run self, SceneDef[] choices)
         {
-            SceneDef debuggingPlains = SceneCatalog.GetSceneDefFromSceneName(CfgStartingStage.Value);
+            SceneDef debuggingPlains = SceneCatalog.GetSceneDefFromSceneName(config.CfgStartingStage.Value);
             if (!debuggingPlains)
             {
-                UnityEngine.Debug.LogWarning($"Scene {CfgStartingStage.Value} not found! going to debugging plains");
+                UnityEngine.Debug.LogWarning($"Scene {config.CfgStartingStage.Value} not found! going to debugging plains");
                 debuggingPlains = SceneCatalog.GetSceneDefFromSceneName("golemplains");
             }
             List<string> newMapOverrides = new List<string>();
             foreach (var mapOverride in debuggingPlains.sceneNameOverrides)
             {
-                if (mapOverride == CfgStartingStage.Value)
+                if (mapOverride == config.CfgStartingStage.Value)
                 {
                     newMapOverrides.Add(mapOverride);
                 }
@@ -181,8 +181,8 @@ namespace addOns
         private void PreGameRuleVoteController_UpdateGameVotes(On.RoR2.PreGameRuleVoteController.orig_UpdateGameVotes orig)
         {
             orig();
-            UnityEngine.Debug.Log(CfgArtifactsList.Value);
-            foreach (string artifact in CfgArtifactsList.Value.Split(','))
+            UnityEngine.Debug.Log(config.CfgArtifactsList.Value);
+            foreach (string artifact in config.CfgArtifactsList.Value.Split(','))
             {
                 if (artifact == "")
                 {
@@ -199,83 +199,83 @@ namespace addOns
                 }
             }
 
-            RuleChoiceDef difficultyRuleDef = RuleCatalog.FindChoiceDef($"Difficulty.{CfgDifficulty.Value}");
+            RuleChoiceDef difficultyRuleDef = RuleCatalog.FindChoiceDef($"Difficulty.{config.CfgDifficulty.Value}");
             if (difficultyRuleDef != null)
             {
                 PreGameController.instance.ApplyChoice(difficultyRuleDef.globalIndex);
             }
             else
             {
-                UnityEngine.Debug.LogWarning($"[DebuggingPlains] could not find Difficulty {CfgDifficulty.Value}! ignoring");
-                difficultyRuleDef = RuleCatalog.FindChoiceDef($"Difficulty.{CfgDifficulty.DefaultValue}");
+                UnityEngine.Debug.LogWarning($"[DebuggingPlains] could not find Difficulty {config.CfgDifficulty.Value}! ignoring");
+                difficultyRuleDef = RuleCatalog.FindChoiceDef($"Difficulty.{config.CfgDifficulty.DefaultValue}");
                 PreGameController.instance.ApplyChoice(difficultyRuleDef.globalIndex);
             }
         }
 
         private void InitConfigs()
         {
-            CfgEnabled = Config.Bind(
+            config.CfgEnabled = Config.Bind(
             "mod_config",
             "enabled",
             true,
             "change to false if you want to disable the mod hooks and run the classic game"
             );
-            CfgScenesConfigPath = Config.Bind(
+            config.CfgScenesConfigPath = Config.Bind(
             "mod_config",
             "scenes_config_path",
             "scenesConfig.json",
             "path to the scenes config file containing a json with all the scenes data (if it does not exists, it is created automatically)"
             );
-            CfgSkipLobbyScreen = Config.Bind(
+            config.CfgSkipLobbyScreen = Config.Bind(
             "mod_config",
             "skip_lobby",
             true,
             "skip the character selection screen and head straight to the run"
             );
-            CfgInitCmds = Config.Bind(
+            config.CfgInitCmds = Config.Bind(
             "run_config",
             "initial_cmds",
             "no_enemies; kill_all 2;",
             "Commands to run at the beginning of the run (must be ConCommands concatenated with ';' as a seperator)"
             );
-            CfgCharacter = Config.Bind(
+            config.CfgCharacter = Config.Bind(
             "run_config",
             "character",
             "Commando",
             "selected character to spawn; doesn't have to be a survivor :) (Commando,Huntress,Toolbot,Engi,Mage,Merc,Treebot,Loader,Croco,Captain or any character mod you'd like!)"
             );
-            CfgSpawnWithDropPod = Config.Bind(
+            config.CfgSpawnWithDropPod = Config.Bind(
             "run_config",
             "drop_pod",
             false,
             "spawn from a falling drop pod or simply appearing on the scene"
             );
-            CfgArtifactsList = Config.Bind(
+            config.CfgArtifactsList = Config.Bind(
             "run_config",
             "artifacts",
             "",
             "Artifacts to activate (must be the artifact asset names concatenated with ',' as a seperator) "
             );
-            CfgDifficulty = Config.Bind(
+            config.CfgDifficulty = Config.Bind(
             "run_config",
             "difficulty",
             "Normal",
             "Desired difficulty (Easy, Normal, Hard or any other difficulty you got)"
             );
-            CfgStartingStage = Config.Bind(
+            config.CfgStartingStage = Config.Bind(
             "run_config",
             "starting_stage",
             "golemplains",
             "Starting stage"
             );
-            CfgFreezeTimer = Config.Bind(
+            config.CfgFreezeTimer = Config.Bind(
             "run_config",
             "freeze_timer",
             true,
             "freeze the timer"
             );
 
-            string jsonConfigPath = System.IO.Path.Combine(System.IO.Path.GetDirectoryName(CfgEnabled.ConfigFile.ConfigFilePath), CfgScenesConfigPath.Value);
+            string jsonConfigPath = System.IO.Path.Combine(System.IO.Path.GetDirectoryName(config.CfgEnabled.ConfigFile.ConfigFilePath), config.CfgScenesConfigPath.Value);
             string jsonBuffer = "";
             bool validJsonFile = true;
             bool fileExists = true;

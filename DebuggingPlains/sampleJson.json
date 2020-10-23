@@ -15,7 +15,46 @@
             },
             "objectsLocations": [
                 {
+                   "objName": "SpawnCards/InteractableSpawnCard/iscBarrel1",
+                    "position": {
+                        "x": 317.12,
+                        "y": -52.21725,
+                        "z": -158.0462
+                    },
+                    "rotation": {
+                        "x": 0,
+                        "y": 230,
+                        "z": 0
+                    }
+                },
+                {
+                    "objName": "SpawnCards/InteractableSpawnCard/iscEquipmentBarrel",
+                    "position": {
+                        "x": 318.738,
+                        "y": -52.23994,
+                        "z": -159.8435
+                    },
+                    "rotation": {
+                        "x": 0,
+                        "y": 230,
+                        "z": 0
+                    }
+                },
+                {
                     "objName": "SpawnCards/InteractableSpawnCard/iscChest1",
+                    "position": {
+                        "x": 320.9254,
+                        "y": -52.46462,
+                        "z": -162.2499
+                    },
+                    "rotation": {
+                        "x": 0,
+                        "y": 230,
+                        "z": 0
+                    }
+                },
+                {
+                    "objName": "SpawnCards/InteractableSpawnCard/iscChest2",
                     "position": {
                         "x": 323.2392,
                         "y": -52.29929,
@@ -28,11 +67,11 @@
                     }
                 },
                 {
-                    "objName": "SpawnCards/InteractableSpawnCard/iscChest2",
+                    "objName": "SpawnCards/InteractableSpawnCard/iscGoldChest",
                     "position": {
-                        "x": 325.264,
-                        "y": -52.47514,
-                        "z": -167.6548
+                        "x": 326.1438,
+                        "y": -52.47445,
+                        "z": -167.6568
                     },
                     "rotation": {
                         "x": 0,
@@ -41,10 +80,10 @@
                     }
                 },
                 {
-                    "objName": "SpawnCards/InteractableSpawnCard/iscGoldChest",
+                    "objName": "SpawnCards/InteractableSpawnCard/iscLunarChest",
                     "position": {
-                        "x": 328.2358,
-                        "y": -51.72319,
+                        "x": 329.2358,
+                        "y": -52.82319,
                         "z": -170.4923
                     },
                     "rotation": {

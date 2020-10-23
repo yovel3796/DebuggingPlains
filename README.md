@@ -22,17 +22,18 @@ Key features:
 
 ## Future Updates
 -----------------------------
-Currently i'm planning to add:
+i'm planning to add:
 
 - XYZ character location indicator at the bottom of the screen to help you with position related stuff
-- currently i've prepared 1 "debug location" for you to use at golemplains (you can find it in the maps json file), i'm planning to make more like this in the future and maybe even create a debug map 
+- spawn option as monster as well :)
+- currently i've prepared 1 "debug location" for you to use at golemplains (you can find it in the maps json file), i'm planning to make more like this in the future and maybe even create a debug map
+- configurable stage list instead of a single stage
 
 ## Compatibility / Issues
 -----------------------------
 This is the very first version of this mod and obviously will have a few bugs. i'm working hard to make this mod the most intuitive and comfortable for you, so please feel free to use it, break it, shred it, destroy it and i'll be very happy to hear about it and fix it.
 
 feel free to contact me about anything :)
-
 
 find me on the modding server on discord: addOns#7321
 
